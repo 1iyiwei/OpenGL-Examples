@@ -3,7 +3,7 @@
 	url = https://github.com/glfw/glfw
 [submodule "glxw"]
 	path = glxw
-	url = https://github.com/rikusalminen/glxw
+	url = https://github.com/1iyiwei/glxw
 [submodule "glm"]
 	path = glm
 	url = https://github.com/Groovounet/glm
