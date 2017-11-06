@@ -177,12 +177,12 @@ public:
         // data for a fullscreen quad
         GLfloat vertexData[] = {
             //  X     Y     Z           R     G     B
-            1.0f, 1.0f, 0.0f,       1.0f, 0.0f, 0.0f, // vertex 0
-            -1.0f, 1.0f, 0.0f,       0.0f, 1.0f, 0.0f, // vertex 1
-            1.0f,-1.0f, 0.0f,       0.0f, 0.0f, 1.0f, // vertex 2
-            1.0f,-1.0f, 0.0f,       0.0f, 0.0f, 1.0f, // vertex 3
-            -1.0f, 1.0f, 0.0f,       0.0f, 1.0f, 0.0f, // vertex 4
-            -1.0f,-1.0f, 0.0f,       1.0f, 0.0f, 0.0f, // vertex 5
+            1.0f, 1.0f, 0.0f,       1.0f, 0.0f, 0.0f, // red
+            -1.0f, 1.0f, 0.0f,       0.0f, 1.0f, 0.0f, // green
+            1.0f,-1.0f, 0.0f,       0.0f, 0.0f, 1.0f, // blue
+            1.0f,-1.0f, 0.0f,       0.0f, 0.0f, 1.0f, // blue
+            -1.0f, 1.0f, 0.0f,       0.0f, 1.0f, 0.0f, // green
+            -1.0f,-1.0f, 0.0f,       1.0f, 1.0f, 0.0f, // yellow
         }; // 6 vertices with 6 components (floats) each
     
         // fill with data
@@ -204,6 +204,8 @@ public:
 
     void Draw(void) const
     {
+        glClear(GL_COLOR_BUFFER_BIT);
+
         glBindVertexArray(_vao);
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
@@ -212,11 +214,25 @@ protected:
     GLuint _vao, _vbo;
 };
 
+class CallBacks
+{
+public:
+    static void FramebufferSize(GLFWwindow* window, int width, int height)
+    {
+        glViewport(0, 0, width, height);
+    }
+};
+
 int Main(int argc, char **argv)
 {
-    const int width = 640;
-    const int height = 480;
+    // input arguments
+    const int default_win_size = 256;
 
+    int arg_ctr = 0;    
+    const int width = (arg_ctr + 1) < argc ? atoi(argv[++arg_ctr]) : default_win_size;
+    const int height = (arg_ctr + 1) < argc ? atoi(argv[++arg_ctr]) : width;
+
+    // init
     if(glfwInit() == GL_FALSE) 
     {
         cerr << "failed to init GLFW" << endl;
@@ -247,6 +263,9 @@ int Main(int argc, char **argv)
         return 1;
     }
 
+    // call backs
+    glfwSetFramebufferSizeCallback(window, CallBacks::FramebufferSize);
+
     // scope for program and scene objects
     {
         // shader program
@@ -267,11 +286,8 @@ int Main(int argc, char **argv)
         {
             glfwPollEvents();
 
-            // drawing etc goes here
-            glClear(GL_COLOR_BUFFER_BIT);
-
+            // draw stuff
             program.Use();
-
             scene.Draw();
 
             // check for errors
